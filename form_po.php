@@ -7,6 +7,52 @@ if (!isset($_SESSION['username'])) {
   $hak_akses = $_SESSION['hak_akses'];
 }
 ?>
+
+<?php
+include "koneksi.php";
+
+if (isset($_POST['batal'])) {
+  // Pastikan nilai id_po sudah diterima dari form
+  if (isset($_POST['id_po'])) {
+    $id_po = $_POST['id_po'];
+
+    // Buat query DELETE dengan menggunakan placeholder untuk nilai id_po
+    $a = "DELETE FROM tabel_po WHERE id_po = ?";
+    $stmt = mysqli_prepare($koneksi, $a);
+
+    if ($stmt) {
+      mysqli_stmt_bind_param($stmt, "s", $id_po); // Sesuaikan "s" dengan tipe data id_po
+      mysqli_stmt_execute($stmt);
+
+      // Periksa apakah penghapusan berhasil
+      if (mysqli_stmt_affected_rows($stmt) > 0) {
+        echo "<script language='javascript'>
+                    alert('Data PO berhasil dihapus');
+                    document.location='form_po.php';
+                    </script>";
+      } else {
+        echo "<script language='javascript'>
+                    alert('Gagal menghapus data PO');
+                    </script>";
+      }
+
+      mysqli_stmt_close($stmt);
+    } else {
+      echo "<script language='javascript'>
+                alert('Gagal melakukan persiapan statement');
+                </script>";
+    }
+  } else {
+    echo "<script language='javascript'>
+            alert('ID PO tidak valid');
+            </script>";
+  }
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -183,67 +229,66 @@ if (!isset($_SESSION['username'])) {
           <div class="row">
             <div class="col-lg-12">
               <!-- /.card -->
-
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">DataTable data user</h3>
-                  <div class="box-header">
-                    <br><a class="btn btn-success" href="form_tambahpo.php">Tambah Data</a>
+              <form class="form-horizontal" method="post">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">DataTable data user</h3>
+                    <div class="box-header">
+                      <br><a class="btn btn-success" href="form_tambahpo.php">Tambah Data</a>
+                    </div>
                   </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Password</th>
-                        <th>Nik</th>
-                        <th>Hapus/Edit</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                      include "koneksi.php";
-                      $a = "SELECT a.id_po, a.tgl_po, b.nama_supplayer
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>No PO</th>
+                          <th>Supplayer</th>
+                          <th>Tanggal PO</th>
+                          <th>Hapus PO</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        include "koneksi.php";
+                        $a = "SELECT a.id_po, a.tgl_po, b.nama_supplayer
                       FROM tabel_po a
                       JOIN tabel_supplayer b ON a.id_supplayer = b.id_supplayer
                       ORDER BY a.id_po";
-                      $b = mysqli_query($koneksi, $a);
-                      $no = 1;
-                      while ($c = mysqli_fetch_array($b)) {
-                      ?>
+                        $b = mysqli_query($koneksi, $a);
+                        $no = 1;
+                        while ($c = mysqli_fetch_array($b)) {
+                        ?>
+                          <tr>
+                            <td><?php echo $no; ?></td>
+                            <td><?php echo $c['id_po']; ?></td>
+                            <td><?php echo $c['nama_supplayer']; ?></td>
+                            <td><?php echo $c['tgl_po']; ?></td>
+                            <td>
+                              <form method="post" onsubmit="return confirm('Yakin ingin menghapus data?');">
+                                <input type="hidden" name="id_po" value="<?php echo $c['id_po']; ?>" />
+                                <button type="submit" name="batal" class="btn btn-link"><i class="fa fa-trash"></i></button>
+                              </form>
+                            </td>
+                          </tr>
+                        <?php $no++;
+                        } ?>
+                      </tbody>
+                      <tfoot>
                         <tr>
-                          <td><?php echo $no; ?></td>
-                          <td><?php echo $c['id_po']; ?></td>
-                          <td><?php echo $c['nama_supplayer']; ?></td>
-                          <td><?php echo $c['tgl_po']; ?></td>
-                          <td>
-                            <a href="javascript:if(confirm('Yakin ingin menghapus data?'))
-                          {document.location='fungsi_hapus.php?id_po=<?php echo $c['id_po']; ?>';}">
-                              <i class="fa fa-trash"></i></a> &nbsp;
-                            <a href="javascript:
-                          {document.location='form_ubahdata.php?id_po=<?php echo $c['id_po']; ?>';}">
-                              <i class="fa fa-edit"></i></a>
-                          </td>
+                          <th>No</th>
+                          <th>No PO</th>
+                          <th>Supplayer</th>
+                          <th>Tanggal PO</th>
+                          <th>Hapus PO</th>
                         </tr>
-                      <?php $no++;
-                      } ?>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Password</th>
-                        <th>Nik</th>
-                        <th>Hapus/Edit</th>
-                      </tr>
-                    </tfoot>
-                  </table>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
                 </div>
-                <!-- /.card-body -->
-              </div>
+              </form>
               <!-- /.card -->
               <!-- /.card -->
             </div>

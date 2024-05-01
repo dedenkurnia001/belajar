@@ -451,12 +451,7 @@ if (isset($_POST['batal'])) {
                             <td><?php echo $c['kali']; ?></td>
                             <td>
                               <button type="submit" name="batal" class="fa fa-trash" value="Cancel">
-                                <!-- <a href="javascript:if(confirm('Yakin ingin menghapus data?'))
-                                    {document.location='fungsi_hapusbarang.php?id_barang=<?php echo $c['id_barang']; ?>';}">
-                                <i class="fa fa-trash"></i></a> &nbsp;
-                              <a href="javascript:
-                                    {document.location='form_ubahbarang.php?id_barang=<?php echo $c['id_barang']; ?>';}">
-                                <i class="fa fa-edit"></i></a> -->
+
                             </td>
                           </tr>
                         <?php $no++;
